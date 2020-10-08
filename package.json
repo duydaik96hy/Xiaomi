@@ -1,0 +1,45 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server --config ./webpack.config.js --mode development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duydaik96hy/web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/duydaik96hy/web/issues"
+  },
+  "homepage": "https://github.com/duydaik96hy/web#readme",
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.51",
+    "@types/react-dom": "^16.9.8",
+    "autoprefixer": "^10.0.1",
+    "awesome-typescript-loader": "^5.2.1",
+    "copy-webpack-plugin": "^6.2.0",
+    "css-loader": "^4.3.0",
+    "file-loader": "^6.1.0",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^0.12.0",
+    "postcss-loader": "^4.0.3",
+    "precss": "^4.0.0",
+    "sass-loader": "^10.0.2",
+    "source-map-loader": "^1.1.0",
+    "tslint-webpack-plugin": "^2.1.0",
+    "typescript": "^4.0.3",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
