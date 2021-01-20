@@ -5,11 +5,7 @@
         "target": "es5",
         "jsx": "react",
         "lib": [
-            "es2017",
-            "dom",
-            "webworker",
-            "es6",
-            "DOM"
+            "dom"
         ],
         "resolveJsonModule": true,
         "alwaysStrict": true,
@@ -21,7 +17,12 @@
     },
     "include": [
         "./src/**/*.ts",
-        "./src/**/*.tsx",
-        "node_modules/@date-io/type", "src/containers/my-profile/myProfile.spec.txs"
+        "./src/**/*.tsx"
+    ],
+    "exclude": [
+        "./src/**/*.spec.ts",
+        "./src/**/*.spec.tsx",
+        "./src/**/*.test.ts",
+        "./src/**/*.test.tsx"
     ]
 }

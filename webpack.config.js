@@ -10,10 +10,7 @@ const TSLintPlugin = require("tslint-webpack-plugin");
 
 const config = {
     entry: {
-        app: "./src/App.tsx",
-    },
-    node: {
-        fs: "empty",
+        app: "./src/index.tsx",
     },
 
     optimization: {
@@ -31,6 +28,9 @@ const config = {
 
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".json", ".css", ".scss"],
+        fallback: {
+            path: false,
+        },
     },
 
     plugins: [
@@ -45,24 +45,7 @@ const config = {
         }),
 
         new CopyWebpackPlugin({
-            patterns: [
-                { from: "assets/**/*" },
-                { from: "manifest.json" },
-                // {
-                //     from: "src/service-worker.ts",
-                //     to: "./service-worker.js",
-                //     force: true,
-                //     transform: (content, path) => {
-                //         const source = content.toString();
-
-                //         let result = ts.transpileModule(source, {
-                //             compilerOptions: tsConfig,
-                //         });
-
-                //         return result.outputText;
-                //     },
-                // },
-            ],
+            patterns: [{ from: "assets/**/*" }],
         }),
     ],
 
@@ -86,8 +69,9 @@ const config = {
                 test: /\.(woff|woff2|eot|ttf|otf)$/,
                 use: "file-loader",
             },
+
             {
-                test: /\.(png|jpg)$/,
+                test: /\.(png|jpg|webp)$/,
                 use: ["url-loader"],
             },
         ],
@@ -95,7 +79,10 @@ const config = {
 };
 
 module.exports = (env, argv) => {
-    let output = {};
+    let output = {
+        filename: "[name].[fullhash].js",
+        path: __dirname + "/dist",
+    };
     let plugins = config.plugins;
     let module = config.module;
 
@@ -103,7 +90,7 @@ module.exports = (env, argv) => {
         rules: [
             ...module.rules,
             {
-                test: /\.(sa|sc|c)ss$/,
+                test: /(?!codicon)\.(sa|sc|c)ss$/,
                 use: [
                     {
                         loader: argv.mode === "development" ? "style-loader" : MiniCssExtractPlugin.loader, // inject CSS to page
@@ -112,13 +99,34 @@ module.exports = (env, argv) => {
                     {
                         loader: "postcss-loader", // Run post css actions
                         options: {
-                            // post css plugins, can be exported to postcss.config.js
-                            plugins: function () {
-                                return [require("precss"), require("autoprefixer")];
+                            postcssOptions: {
+                                // post css plugins, can be exported to postcss.config.js
+                                // plugins: function () {
+                                //     return [require("precss"), require("autoprefixer")];
+                                // },
+                                plugins: ["precss", "autoprefixer"],
                             },
                         },
                     },
                     "sass-loader", // compiles Sass to CSS
+                ],
+            },
+            {
+                test: /\.svg/,
+                loader: "file-loader",
+            },
+            {
+                // This is required for react-markdown in conjuntion with webpack 5+
+                // https://github.com/vfile/vfile/issues/38#issuecomment-640479137
+                test: /node_modules\/vfile\/core\.js/,
+                use: [
+                    {
+                        loader: "imports-loader",
+                        options: {
+                            type: "commonjs",
+                            imports: ["single process/browser process"],
+                        },
+                    },
                 ],
             },
         ],
@@ -126,18 +134,14 @@ module.exports = (env, argv) => {
 
     switch (argv.mode) {
         case "development":
-            output = {
-                filename: "[name].[hash].js",
-                path: __dirname + "/dist",
-            };
-
             plugins = [
                 ...plugins,
                 new webpack.HotModuleReplacementPlugin(),
                 new webpack.DefinePlugin({
                     SERVER_API_URI: '"http://localhost:3000/"',
                     BUILD_DATETIMESTAMP: `"${new Date().toLocaleString()}"`,
-                    BUILD_VERSION: `"1.0.0 Release Candidate"`,
+                    BUILD_VERSION: `"Xoet 0.2.0 Ruoi Tu Ky"`,
+                    PEERJS_PORT: 3000,
                 }),
                 new TSLintPlugin({
                     files: ["./src/**/*.ts"],
@@ -147,21 +151,13 @@ module.exports = (env, argv) => {
 
         case "production":
         default:
-            output = {
-                filename: "[name].[contenthash].js",
-                path: __dirname + "/dist",
-            };
-
             plugins = [
                 ...plugins,
                 new webpack.DefinePlugin({
-                    SERVER_API_URI: '"https://tms.draphony.com/api/"',
+                    SERVER_API_URI: '"/api/"',
                     BUILD_DATETIMESTAMP: `"${new Date().toLocaleString()}"`,
-                    BUILD_VERSION: `"1.0.0 Release Candidate 1"`,
-                }),
-                new MiniCssExtractPlugin({
-                    filename: "[name].[hash].css",
-                    chunkFilename: "[id].[hash].css",
+                    BUILD_VERSION: `"Xoet 0.1.0 Tiet Canh"`,
+                    PEERJS_PORT: 443,
                 }),
 
                 // For production environment, tslint is an extra step in the build order.
